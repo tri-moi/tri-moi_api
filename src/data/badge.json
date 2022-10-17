@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Pro du plastique",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en plastique"
+  },
+  {
+    "id": 2,
+    "name": "Pro du verre",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en verre"
+  },
+  {
+    "id": 3,
+    "name": "Pro du papier",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en papier"
+  }
+]
