@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "name": "bronze",
+    "goal": "50"
+  },
+  {
+    "id": "2",
+    "name": "silver",
+    "goal": "100"
+  },
+  {
+    "id": "3",
+    "name": "gold",
+    "goal": "200"
+  }
+]
