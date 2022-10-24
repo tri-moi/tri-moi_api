@@ -34,8 +34,6 @@ class UserFixtures extends Fixture
         $badges = json_decode($badges, true);
         $level = file_get_contents("./src/data/level.json");
         $level = json_decode($level, true);
-        var_dump($badges);
-        var_dump($level);
 
         $this->extracted($badges, $level, $user, $manager);
 
