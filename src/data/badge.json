@@ -13,5 +13,25 @@
     "id": 3,
     "name": "Pro du papier",
     "description": "Ce badge est décerné à ceux qui ont scanné des produits en papier"
+  },
+  {
+    "id": 4,
+    "name": "Pro du carton",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en carton"
+  },
+  {
+    "id": 5,
+    "name": "Pro du métal",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en métal"
+  },
+  {
+    "id": 6,
+    "name": "Pro du textile",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en textile"
+  },
+  {
+    "id": 7,
+    "name": "Pro du bois",
+    "description": "Ce badge est décerné à ceux qui ont scanné des produits en bois"
   }
 ]
