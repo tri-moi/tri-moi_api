@@ -20,6 +20,11 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $badges = file_get_contents("./src/data/badge.json");
+        $badges = json_decode($badges, true);
+        $level = file_get_contents("./src/data/level.json");
+        $level = json_decode($level, true);
+
         $user = new User();
         $user->setEmail("admin@admin.fr");
         $user->setPassword($this->hasher->hashPassword($user, "Admin123*"));
@@ -29,11 +34,6 @@ class UserFixtures extends Fixture
         $user->setProfilPic("https://www.fakepersongenerator.com/Face/female/female1022491733642.jpg");
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
-
-        $badges = file_get_contents("./src/data/badge.json");
-        $badges = json_decode($badges, true);
-        $level = file_get_contents("./src/data/level.json");
-        $level = json_decode($level, true);
 
         $this->extracted($badges, $level, $user, $manager);
 
@@ -46,16 +46,9 @@ class UserFixtures extends Fixture
         $user->setProfilPic("https://www.fakepersongenerator.com/Face/male/male1085416855.jpg");
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
-
         $this->extracted($badges, $level, $user, $manager);
-
-
         $manager->flush();
         $manager->clear();
-
-
-        // creation des badges par rapport à l'user
-
     }
 
     /**
