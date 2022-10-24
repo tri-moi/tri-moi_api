@@ -21,9 +21,13 @@ class Type
     #[ORM\OneToMany(mappedBy: 'id_type', targetEntity: Trash::class)]
     private Collection $trashes;
 
+    #[ORM\OneToMany(mappedBy: 'id_type', targetEntity: History::class)]
+    private Collection $histories;
+
     public function __construct()
     {
         $this->trashes = new ArrayCollection();
+        $this->histories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,6 +71,36 @@ class Type
             // set the owning side to null (unless already changed)
             if ($trash->getIdType() === $this) {
                 $trash->setIdType(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, History>
+     */
+    public function getHistories(): Collection
+    {
+        return $this->histories;
+    }
+
+    public function addHistory(History $history): self
+    {
+        if (!$this->histories->contains($history)) {
+            $this->histories->add($history);
+            $history->setIdType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistory(History $history): self
+    {
+        if ($this->histories->removeElement($history)) {
+            // set the owning side to null (unless already changed)
+            if ($history->getIdType() === $this) {
+                $history->setIdType(null);
             }
         }
 
