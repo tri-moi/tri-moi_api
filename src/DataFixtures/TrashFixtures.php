@@ -22,7 +22,7 @@ class TrashFixtures extends Fixture
             if (!in_array($typeName, $types)) {
                 $types[] = $typeName;
                 $type->setName($typeName);
-               // $manager->persist($type);
+               $manager->persist($type);
             }
         }
        $manager->flush();
@@ -42,7 +42,7 @@ class TrashFixtures extends Fixture
             }
             $trash->setLatitude($item["fields"]["geo_point_2d"][0]);
             $trash->setLongitude($item["fields"]["geo_point_2d"][1]);
-           // $manager->persist($trash);
+           $manager->persist($trash);
         }
 
         $manager->flush();

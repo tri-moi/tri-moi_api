@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Entity\UserBadge;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,6 +20,11 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $badges = file_get_contents("./src/data/badge.json");
+        $badges = json_decode($badges, true);
+        $level = file_get_contents("./src/data/level.json");
+        $level = json_decode($level, true);
+
         $user = new User();
         $user->setEmail("admin@admin.fr");
         $user->setPassword($this->hasher->hashPassword($user, "Admin123*"));
@@ -29,7 +35,7 @@ class UserFixtures extends Fixture
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
 
-        // $manager->persist($user);
+        $this->extracted($badges, $level, $user, $manager);
 
         $user = new User();
         $user->setEmail("user@user.fr");
@@ -40,9 +46,32 @@ class UserFixtures extends Fixture
         $user->setProfilPic("https://www.fakepersongenerator.com/Face/male/male1085416855.jpg");
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
-
-        //  $manager->persist($user);
-
+        $this->extracted($badges, $level, $user, $manager);
         $manager->flush();
+        $manager->clear();
+    }
+
+    /**
+     * @param mixed $badges
+     * @param mixed $level
+     * @param User $user
+     * @param ObjectManager $manager
+     * @return array
+     */
+    public function extracted(mixed $badges, mixed $level, User $user, ObjectManager $manager): array
+    {
+        foreach ($badges as $item) {
+            foreach ($level as $value) {
+                $badge = new UserBadge();
+                $badge->setBadge(json_encode($item));
+                $badge->setLevel(json_encode($value));
+                $badge->setIdUser($user);
+                $badge->setNmbreScan(0);
+                $manager->persist($badge);
+            }
+        }
+
+        $manager->persist($user);
+        return array($item, $value, $badge);
     }
 }
