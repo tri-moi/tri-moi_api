@@ -22,6 +22,7 @@ class AuthController extends AbstractController
     #[Route('/check-mail', name: 'app_check_mail', methods: ['POST'])]
     public function checkMail(Request $request, ManagerRegistry $managerRegistry): JsonResponse
     {
+        header('Access-Control-Allow-Origin: *');
         $email = $request->request->get('email');
 
         $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
@@ -32,6 +33,8 @@ class AuthController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $managerRegistry): JsonResponse
     {
+        header('Access-Control-Allow-Origin: *');
+
         $email = $request->request->get('email');
         $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
         $password = $request->request->get('password');
