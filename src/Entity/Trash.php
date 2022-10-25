@@ -13,8 +13,6 @@ class Trash
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'trashes')]
-    private ?type $id_type = null;
 
 
     #[ORM\Column(length: 255)]
@@ -28,6 +26,9 @@ class Trash
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse = null;
+
+    #[ORM\ManyToOne(inversedBy: 'trashes')]
+    private ?type $id_type = null;
 
     public function getId(): ?int
     {

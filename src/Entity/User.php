@@ -51,15 +51,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'id_user', targetEntity: UserBadge::class)]
     private Collection $userBadges;
 
-    #[ORM\OneToMany(mappedBy: 'id_user', targetEntity: History::class)]
-    private Collection $histories;
 
     public function __construct()
     {
         $this->userBadges = new ArrayCollection();
         $this->histories = new ArrayCollection();
     }
-
 
 
     public function getId(): ?int
@@ -86,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -234,34 +231,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, History>
-     */
-    public function getHistories(): Collection
-    {
-        return $this->histories;
-    }
-
-    public function addHistory(History $history): self
-    {
-        if (!$this->histories->contains($history)) {
-            $this->histories->add($history);
-            $history->setIdUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHistory(History $history): self
-    {
-        if ($this->histories->removeElement($history)) {
-            // set the owning side to null (unless already changed)
-            if ($history->getIdUser() === $this) {
-                $history->setIdUser(null);
-            }
-        }
-
-        return $this;
-    }
 
 }

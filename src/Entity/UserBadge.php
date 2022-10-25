@@ -13,8 +13,6 @@ class UserBadge
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'userBadges')]
-    private ?user $id_user = null;
 
     #[ORM\Column(length: 255)]
     private ?string $badge = null;
@@ -24,6 +22,9 @@ class UserBadge
 
     #[ORM\Column]
     private ?int $nmbre_scan = null;
+
+    #[ORM\ManyToOne(inversedBy: 'userBadges')]
+    private ?user $id_user = null;
 
     public function getId(): ?int
     {
