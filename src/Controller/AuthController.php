@@ -28,7 +28,6 @@ class AuthController extends AbstractController
     {
         $email = $request->request->get('email');
         $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
-        dd($user->getUserBadges());
         $password = $request->request->get('password');
         $error = null;
         $data = [];
@@ -36,7 +35,6 @@ class AuthController extends AbstractController
             $error = "Email and password are required";
         } else {
             $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
-            var_dump($user);
             if (!$user) {
                 $error = "User not found";
             } else {
@@ -49,7 +47,10 @@ class AuthController extends AbstractController
                         'roles' => $user->getRoles(),
                         "firtName" => $user->getFirstName(),
                         "lastName" => $user->getLastName(),
-                        "profilePicture" => $user->getProfilePic(),
+                        "profilePicture" => $user->getProfilPic(),
+                        "birthday" => $user->getBirthday(),
+                        "createdAt" => $user->getCreatedAt(),
+                        "updatedAt" => $user->getUpdatedAt(),
                     ];
                 }
             }
@@ -57,8 +58,6 @@ class AuthController extends AbstractController
         }
         return $this->json([
             'message' => 'Login',
-            'email' => $email,
-            'password' => $password,
             'error' => $error,
             "user" => $data,
         ]);
