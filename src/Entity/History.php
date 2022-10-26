@@ -19,8 +19,6 @@ class History
     #[ORM\Column(length: 255)]
     private ?string $brand = null;
 
-    #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?type $id_type = null;
 
     #[ORM\Column(length: 255)]
     private ?string $barcode = null;
@@ -29,7 +27,8 @@ class History
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?user $id_user = null;
+    private ?type $id_type = null;
+
 
     public function getId(): ?int
     {
@@ -92,18 +91,6 @@ class History
     public function setImage(string $image): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?user
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?user $id_user): self
-    {
-        $this->id_user = $id_user;
 
         return $this;
     }

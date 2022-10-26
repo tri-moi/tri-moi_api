@@ -30,6 +30,7 @@ class Type
         $this->histories = new ArrayCollection();
     }
 
+
     public function getId(): ?int
     {
         return $this->id;
