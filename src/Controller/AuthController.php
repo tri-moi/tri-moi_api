@@ -66,4 +66,51 @@ class AuthController extends AbstractController
             "user" => $data,
         ]);
     }
+
+    #[Route('/register', name: 'api_register', methods: ['POST'])]
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $managerRegistry): JsonResponse
+    {
+        header('Access-Control-Allow-Origin: *');
+        $error = [];
+        $email = $request->request->get("email");
+        $password = $request->request->get("password");
+        $first_name = $request->request->get("first_name");
+        $last_name = $request->request->get("last_name");
+        if (!$email || !$password || !$first_name || !$last_name) {
+            if (!$email) {
+                $error["email"] = "Email is required";
+            }
+            if (!$password) {
+                $error["password"] = "Password is required";
+            }
+            if (!$first_name) {
+                $error["first_name"] = "First name is required";
+            }
+            if (!$last_name) {
+                $error["last_name"] = "Last name is required";
+            }
+        } else {
+            $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
+            if ($user) {
+                $error["email"] = "Email already exists";
+            } else {
+                $user = new User();
+                $user->setEmail($email);
+                $user->setPassword($passwordHasher->hashPassword($user, $password));
+                $user->setFirstName($first_name);
+                $user->setLastName($last_name);
+                $user->setRoles(["ROLE_USER"]);
+                $user->setCreatedAt(new \DateTimeImmutable());
+                $managerRegistry->getManager()->persist($user);
+                $managerRegistry->getManager()->flush();
+                return $this->json([
+                    'message' => "user created",
+                ]);
+            }
+        }
+        return $this->json([
+            'error' => $error,
+        ]);
+    }
 }
+
