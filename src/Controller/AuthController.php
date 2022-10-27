@@ -43,9 +43,9 @@ class AuthController extends AbstractController
             if (!$user) {
                 $error = "User not found";
             } else {
-                if (!$passwordHasher->isPasswordValid($user, $password)) {
-                    $error = "Invalid credentials";
-                } else {
+                if ($user->getDeletedAt() != null) {
+                    $user->setDeletedAt(null);
+                    $managerRegistry->getManager()->flush();
                     $data = [
                         'id' => $user->getId(),
                         'email' => $user->getEmail(),
@@ -57,6 +57,26 @@ class AuthController extends AbstractController
                         "createdAt" => $user->getCreatedAt(),
                         "updatedAt" => $user->getUpdatedAt(),
                     ];
+                    return $this->json([
+                        'account' => "Your account has been reactivated!",
+                        'data' => $data,
+                    ]);
+                } else {
+                    if (!$passwordHasher->isPasswordValid($user, $password)) {
+                        $error = "Invalid credentials";
+                    } else {
+                        $data = [
+                            'id' => $user->getId(),
+                            'email' => $user->getEmail(),
+                            'roles' => $user->getRoles(),
+                            "firtName" => $user->getFirstName(),
+                            "lastName" => $user->getLastName(),
+                            "profilePicture" => $user->getProfilPic(),
+                            "birthday" => $user->getBirthday(),
+                            "createdAt" => $user->getCreatedAt(),
+                            "updatedAt" => $user->getUpdatedAt(),
+                        ];
+                    }
                 }
             }
 
@@ -111,6 +131,12 @@ class AuthController extends AbstractController
         return $this->json([
             'error' => $error,
         ]);
+    }
+
+    #[Route('/reactivate', name: 'app_user_reactivated')]
+    public function reactivated()
+    {
+
     }
 }
 
