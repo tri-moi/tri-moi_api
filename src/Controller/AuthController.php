@@ -14,6 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class AuthController extends AbstractController
 {
 
+    public function __construct()
+    {
+        header('Access-Control-Allow-Origin: *');
+    }
+
     #[Route('/check-mail', name: 'app_check_mail', methods: ['POST'])]
     public function checkMail(Request $request, ManagerRegistry $managerRegistry): JsonResponse
     {
