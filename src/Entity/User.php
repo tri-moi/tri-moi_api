@@ -51,6 +51,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'id_user', targetEntity: UserBadge::class)]
     private Collection $userBadges;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deleted_at = null;
+
 
     public function __construct()
     {
@@ -227,6 +230,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $userBadge->setIdUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
+    {
+        $this->deleted_at = $deleted_at;
 
         return $this;
     }
