@@ -26,9 +26,25 @@ class TypeController extends AbstractController
                 ];
             }
             return $this->json($data);
+        } elseif ($method === "POST") {
+            $name = $request->get('name');
+            $verif_name = $managerRegistry->getRepository(Type::class)->findOneBy(['name' => $name]);
+            if ($verif_name) {
+                return $this->json([
+                    'message' => 'type already exist',
+                ]);
+            } else {
+                $type = new Type();
+                $type->setName($name);
+                $managerRegistry->getManager()->persist($type);
+                $managerRegistry->getManager()->flush();
+                return $this->json([
+                    'message' => 'type created',
+                ]);
+            }
         } else {
             return $this->json([
-                "message" => "Method not allowed",
+                'message' => 'method not allowed',
             ]);
         }
     }
@@ -37,19 +53,71 @@ class TypeController extends AbstractController
     public function oneType($id, ManagerRegistry $managerRegistry, Request $request): JsonResponse
     {
         $method = $request->getMethod();
-        if ($method === "GET") {
-            $type = $managerRegistry->getRepository(Type::class)->findOneBy(['id' => $id]);
-            if ($type) {
-                $data = [
-                    'id' => $type->getId(),
-                    'name' => $type->getName(),
-                ];
-            }
-            return $this->json($data ?? ["error" => "Type not found"]);
-        } else {
-            return $this->json([
-                "message" => "Method not allowed",
-            ]);
+
+        switch ($method) {
+            case "GET":
+                $type = $managerRegistry->getRepository(Type::class)->findOneBy(['id' => $id]);
+                if ($type) {
+                    $data = [
+                        'id' => $type->getId(),
+                        'name' => $type->getName(),
+                    ];
+                }
+                return $this->json($data ?? ["error" => "Type not found"]);
+                break;
+            case "POST":
+                $query = $request->query->get("_method");
+                if ($query) {
+                    if ($query === "PUT") {
+                        $type = $managerRegistry->getRepository(Type::class)->findOneBy(['id' => $id]);
+                        if ($type) {
+                            $name = $request->request->get("name");
+                            if ($name) {
+                                $type->setName($name);
+                                $managerRegistry->getManager()->flush();
+                                return $this->json([
+                                    "message" => "Type updated",
+                                ]);
+                            } else {
+                                return $this->json([
+                                    "error" => "Name is required",
+                                ]);
+                            }
+                        } else {
+                            return $this->json([
+                                "error" => "Type not found",
+                            ]);
+                        }
+                    } else {
+                        return $this->json([
+                            "error" => "Method not allowed",
+                        ]);
+                    }
+                } else {
+                    return $this->json([
+                        "error" => "Method not allowed",
+                    ]);
+                    break;
+                }
+            case "DELETE":
+                $type = $managerRegistry->getRepository(Type::class)->findOneBy(['id' => $id]);
+                if ($type) {
+                    $managerRegistry->getManager()->remove($type);
+                    $managerRegistry->getManager()->flush();
+                    return $this->json([
+                        "message" => "Type deleted",
+                    ]);
+                } else {
+                    return $this->json([
+                        "error" => "Type not found",
+                    ]);
+                }
+                break;
+            default:
+                return $this->json([
+                    "error" => "Method not allowed",
+                ]);
+                break;
         }
     }
 }
