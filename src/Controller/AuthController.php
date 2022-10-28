@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserBadge;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -118,8 +119,22 @@ class AuthController extends AbstractController
                 $user->setCreatedAt(new \DateTimeImmutable());
                 $managerRegistry->getManager()->persist($user);
                 $managerRegistry->getManager()->flush();
+
+                // create badges
+                $badges = file_get_contents("../src/data/badge.json");
+                $badges = json_decode($badges, true);
+                $level = file_get_contents("../src/data/level.json");
+                $level = json_decode($level, true);
+                $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
+
+                foreach ($badges as $item) {
+                    foreach ($level as $value) {
+                        $managerRegistry->getRepository(UserBadge::class)->addUserBadge($user, $item, $value, 0);
+
+                    }
+                }
                 return $this->json([
-                    'message' => "user created",
+                    'message' => "user and badges created",
                 ]);
             }
         }
