@@ -28,19 +28,19 @@ class Trash
     private ?string $adresse = null;
 
     #[ORM\ManyToOne(inversedBy: 'trashes')]
-    private ?type $id_type = null;
+    private ?Type $id_type = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdType(): ?type
+    public function getIdType(): ?Type
     {
         return $this->id_type;
     }
 
-    public function setIdType(?type $id_type): self
+    public function setIdType(?Type $id_type): self
     {
         $this->id_type = $id_type;
 
