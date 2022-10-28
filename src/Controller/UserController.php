@@ -87,7 +87,6 @@ class UserController extends AbstractController
                             return $this->json(["message" => "method not allowed"]);
                         }
                     } else {
-                        var_dump("ici");
                         return $this->json(["message" => "method not allowed"]);
                     }
                     break;
