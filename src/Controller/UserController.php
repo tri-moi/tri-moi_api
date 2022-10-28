@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api', name: 'api_a')]
 class UserController extends AbstractController
 {
+
     #[Route('/users', name: 'app_user')]
     public function index(ManagerRegistry $managerRegistry): JsonResponse
     {
