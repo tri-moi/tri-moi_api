@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api', name: 'api_')]
 class TypeController extends AbstractController
 {
-    #[Route('/type', name: 'app_type')]
+    #[Route('/types', name: 'app_type')]
     public function index(ManagerRegistry $managerRegistry, Request $request): JsonResponse
     {
         $method = $request->getMethod();
@@ -26,7 +26,18 @@ class TypeController extends AbstractController
                 ];
             }
             return $this->json($data);
-        } elseif ($method === "POST") {
+        } else {
+            return $this->json([
+                'message' => 'method not allowed',
+            ]);
+        }
+    }
+
+    #[Route('/type', name: 'app_type_create')]
+    public function create(ManagerRegistry $managerRegistry, Request $request): JsonResponse
+    {
+        $method = $request->getMethod();
+        if ($method === "POST") {
             $name = $request->get('name');
             $verif_name = $managerRegistry->getRepository(Type::class)->findOneBy(['name' => $name]);
             if ($verif_name) {

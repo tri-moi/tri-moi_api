@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api', name: 'app_trash')]
 class TrashController extends AbstractController
 {
-    #[Route('/trash', name: 'app_trash')]
+    #[Route('/trashes', name: 'app_trash')]
     public function index(ManagerRegistry $managerRegistry, Request $request): JsonResponse
     {
         $entityManager = $managerRegistry->getManager();
@@ -30,11 +30,22 @@ class TrashController extends AbstractController
                         'latitude' => $trash->getLatitude(),
                         'longitude' => $trash->getLongitude(),
                         'adresse' => $trash->getAdresse(),
-                        'id_type' => $trash->getIdType()->getId(),
+                        'id_type' => $trash->getIdType()->getName(),
                     ];
                 }
                 return new JsonResponse($data);
                 break;
+            default:
+                return $this->json("Method not allowed");
+        }
+    }
+
+    #[Route('/trash', name: 'app_trash_crud')]
+    public function trash(ManagerRegistry $managerRegistry, Request $request): JsonResponse
+    {
+        $entityManager = $managerRegistry->getManager();
+        $method = $request->getMethod();
+        switch ($method) {
             case "POST":
                 $commune = $request->request->get("commune");
                 $latitude = $request->request->get("latitude");
@@ -56,7 +67,7 @@ class TrashController extends AbstractController
                 }
                 break;
             default:
-                return $this->json("Method not allowed");
+                return $this->json(["message" => "Method not allowed"]);
         }
     }
 
