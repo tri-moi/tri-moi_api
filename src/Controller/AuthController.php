@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserBadge;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,11 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api', name: 'api_')]
 class AuthController extends AbstractController
 {
-
-    public function __construct()
-    {
-        header('Access-Control-Allow-Origin: *');
-    }
 
     #[Route('/check-mail', name: 'app_check_mail', methods: ['POST'])]
     public function checkMail(Request $request, ManagerRegistry $managerRegistry): JsonResponse
@@ -43,9 +39,9 @@ class AuthController extends AbstractController
             if (!$user) {
                 $error = "User not found";
             } else {
-                if (!$passwordHasher->isPasswordValid($user, $password)) {
-                    $error = "Invalid credentials";
-                } else {
+                if ($user->getDeletedAt() != null) {
+                    $user->setDeletedAt(null);
+                    $managerRegistry->getManager()->flush();
                     $data = [
                         'id' => $user->getId(),
                         'email' => $user->getEmail(),
@@ -57,6 +53,26 @@ class AuthController extends AbstractController
                         "createdAt" => $user->getCreatedAt(),
                         "updatedAt" => $user->getUpdatedAt(),
                     ];
+                    return $this->json([
+                        'account' => "Your account has been reactivated!",
+                        'data' => $data,
+                    ]);
+                } else {
+                    if (!$passwordHasher->isPasswordValid($user, $password)) {
+                        $error = "Invalid credentials";
+                    } else {
+                        $data = [
+                            'id' => $user->getId(),
+                            'email' => $user->getEmail(),
+                            'roles' => $user->getRoles(),
+                            "firtName" => $user->getFirstName(),
+                            "lastName" => $user->getLastName(),
+                            "profilePicture" => $user->getProfilPic(),
+                            "birthday" => $user->getBirthday(),
+                            "createdAt" => $user->getCreatedAt(),
+                            "updatedAt" => $user->getUpdatedAt(),
+                        ];
+                    }
                 }
             }
 
@@ -103,8 +119,22 @@ class AuthController extends AbstractController
                 $user->setCreatedAt(new \DateTimeImmutable());
                 $managerRegistry->getManager()->persist($user);
                 $managerRegistry->getManager()->flush();
+
+                // create badges
+                $badges = file_get_contents("../src/data/badge.json");
+                $badges = json_decode($badges, true);
+                $level = file_get_contents("../src/data/level.json");
+                $level = json_decode($level, true);
+                $user = $managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]);
+
+                foreach ($badges as $item) {
+                    foreach ($level as $value) {
+                        $managerRegistry->getRepository(UserBadge::class)->addUserBadge($user, $item, $value, 0);
+
+                    }
+                }
                 return $this->json([
-                    'message' => "user created",
+                    'message' => "user and badges created",
                 ]);
             }
         }

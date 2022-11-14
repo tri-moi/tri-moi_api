@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TrashRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TrashRepository::class)]
@@ -28,19 +30,27 @@ class Trash
     private ?string $adresse = null;
 
     #[ORM\ManyToOne(inversedBy: 'trashes')]
-    private ?type $id_type = null;
+    private ?Type $id_type = null;
+
+    #[ORM\OneToMany(mappedBy: 'id_poubelle', targetEntity: History::class)]
+    private Collection $histories;
+
+    public function __construct()
+    {
+        $this->histories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdType(): ?type
+    public function getIdType(): ?Type
     {
         return $this->id_type;
     }
 
-    public function setIdType(?type $id_type): self
+    public function setIdType(?Type $id_type): self
     {
         $this->id_type = $id_type;
 
@@ -91,6 +101,36 @@ class Trash
     public function setAdresse(?string $adresse): self
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, History>
+     */
+    public function getHistories(): Collection
+    {
+        return $this->histories;
+    }
+
+    public function addHistory(History $history): self
+    {
+        if (!$this->histories->contains($history)) {
+            $this->histories->add($history);
+            $history->setIdPoubelle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistory(History $history): self
+    {
+        if ($this->histories->removeElement($history)) {
+            // set the owning side to null (unless already changed)
+            if ($history->getIdPoubelle() === $this) {
+                $history->setIdPoubelle(null);
+            }
+        }
 
         return $this;
     }

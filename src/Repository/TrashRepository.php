@@ -39,6 +39,19 @@ class TrashRepository extends ServiceEntityRepository
         }
     }
 
+    public function paginateTrash(int $page, int $limit): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        $query = $this->createQueryBuilder('t')
+            ->orderBy('t.id', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return Trash[] Returns an array of Trash objects
 //     */
