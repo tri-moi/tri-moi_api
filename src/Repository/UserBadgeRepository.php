@@ -39,17 +39,6 @@ class UserBadgeRepository extends ServiceEntityRepository
         }
     }
 
-    public function addUserBadge($user, $badge, $level, $nmbreScan): void
-    {
-        $userBadge = new UserBadge();
-        $userBadge->setIdUser($user);
-        $userBadge->setBadge(json_encode($badge));
-        $userBadge->setLevel(json_encode($level));
-        $userBadge->setNmbreScan($nmbreScan);
-        $this->save($userBadge);
-
-        $this->getEntityManager()->flush();
-    }
 //    /**
 //     * @return UserBadge[] Returns an array of UserBadge objects
 //     */

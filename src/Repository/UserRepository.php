@@ -60,7 +60,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function checkEmailExists(string $email): bool
     {
         try {
-            return (bool)$this->createQueryBuilder('u')
+            return (bool) $this->createQueryBuilder('u')
                 ->select('COUNT(u.id)')
                 ->andWhere('u.email = :email')
                 ->setParameter('email', $email)
@@ -70,21 +70,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             return false;
         }
     }
-
-    public function paginateUser(int $page, int $limit): array
-    {
-        $offset = ($page - 1) * $limit;
-
-        $query = $this->createQueryBuilder('u')
-            ->select('u.id, u.email, u.roles, u.created_at, u.deleted_at, u.first_name, u.last_name, u.profil_pic, u.birthday')
-            ->orderBy('u.created_at', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery();
-
-        return $query->getResult();
-    }
-
 
 //    public function findOneBySomeField($value): ?User
 //    {

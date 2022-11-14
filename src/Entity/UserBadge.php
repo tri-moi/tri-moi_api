@@ -24,19 +24,19 @@ class UserBadge
     private ?int $nmbre_scan = null;
 
     #[ORM\ManyToOne(inversedBy: 'userBadges')]
-    private ?User $id_user = null;
+    private ?user $id_user = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdUser(): ?User
+    public function getIdUser(): ?user
     {
         return $this->id_user;
     }
 
-    public function setIdUser(?User $id_user): self
+    public function setIdUser(?user $id_user): self
     {
         $this->id_user = $id_user;
 

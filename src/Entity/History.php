@@ -27,16 +27,7 @@ class History
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?Type $id_type = null;
-
-    #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?Trash $id_trash = null;
-
-    #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?User $id_user = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?type $id_type = null;
 
 
     public function getId(): ?int
@@ -68,12 +59,12 @@ class History
         return $this;
     }
 
-    public function getIdType(): ?Type
+    public function getIdType(): ?type
     {
         return $this->id_type;
     }
 
-    public function setIdType(?Type $id_type): self
+    public function setIdType(?type $id_type): self
     {
         $this->id_type = $id_type;
 
@@ -100,42 +91,6 @@ class History
     public function setImage(string $image): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getIdTrash(): ?Trash
-    {
-        return $this->id_trash;
-    }
-
-    public function setIdTrash(?Trash $id_trash): self
-    {
-        $this->id_trash = $id_trash;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?User
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?User $id_user): self
-    {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(?\DateTimeImmutable $created_at): self
-    {
-        $this->created_at = $created_at;
 
         return $this;
     }
