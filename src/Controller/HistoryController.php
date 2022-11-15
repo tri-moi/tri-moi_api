@@ -20,19 +20,15 @@ class HistoryController extends AbstractController
     public function index(ManagerRegistry $managerRegistry, Request $request): JsonResponse
     {
         $user = $request->query->get('user');
-        $trash = $request->query->get("trash");
         $type = $request->query->get("type");
 
-
-        if (!$user && !$trash && !$type) {
+        if (!$user && !$type) {
             $histories = $managerRegistry->getManager()->getRepository(History::class)->findAll();
-        } elseif ($user && !$trash && !$type) {
+        } elseif ($user && !$type) {
             $histories = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_user' => intval($user)]);
-        } elseif ($trash && !$user && !$type) {
-            $histories = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_trash' => intval($trash)]);
-        } elseif ($type && !$user && !$trash) {
+        } elseif ($type && !$user) {
             $histories = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_type' => intval($type)]);
-        } elseif ($user && $type && !$trash) {
+        } elseif ($user && $type) {
             $histories = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_user' => intval($user), 'id_type' => intval($type)]);
         } else {
             return $this->json([
@@ -50,14 +46,6 @@ class HistoryController extends AbstractController
                 'image' => $history->getImage(),
                 'type' => $history->getIdType()->getName(),
                 "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
-                'trash' => [
-                    'id' => $history->getIdTrash()->getId(),
-                    'commune' => $history->getIdTrash()->getCommune(),
-                    'latitude' => $history->getIdTrash()->getLatitude(),
-                    'longitude' => $history->getIdTrash()->getLongitude(),
-                    'adresse' => $history->getIdTrash()->getAdresse(),
-                    'type' => $history->getIdTrash()->getIdType()->getName(),
-                ],
                 'user' => [
                     'id' => $history->getIdUser()->getId(),
                     'firstname' => $history->getIdUser()->getFirstname(),
@@ -83,12 +71,38 @@ class HistoryController extends AbstractController
                 $barcode = $request->request->get('barcode');
                 $image = $request->request->get('image');
                 $type = $request->request->get('type');
-                $trash = $request->request->get('trash');
                 $user = $request->request->get('user');
 
-                if (!$name || !$brand || !$barcode || !$image || !$type || !$trash || !$user) {
+                $barcodeExist = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode]);
+                if ($barcodeExist) {
                     return $this->json([
-                        'message' => 'Missing parameters',
+                        'message' => 'Le code barre existe déjà',
+                    ]);
+                }
+
+                if (!$name || !$brand || !$barcode || !$image || !$type || !$user) {
+                    $missing = [];
+                    if (!$name) {
+                        $missing[] = 'name';
+                    }
+                    if (!$brand) {
+                        $missing[] = 'brand';
+                    }
+                    if (!$barcode) {
+                        $missing[] = 'barcode';
+                    }
+                    if (!$image) {
+                        $missing[] = 'image';
+                    }
+                    if (!$type) {
+                        $missing[] = 'type';
+                    }
+                    if (!$user) {
+                        $missing[] = 'user';
+                    }
+                    return $this->json([
+                        'message' => 'Paramètres manquants',
+                        'missing' => $missing,
                     ]);
                 }
                 $history = new History();
@@ -97,7 +111,6 @@ class HistoryController extends AbstractController
                 $history->setBarcode($barcode);
                 $history->setImage($image);
                 $history->setIdType($managerRegistry->getManager()->getRepository(Type::class)->find(intval($type)));
-                $history->setIdTrash($managerRegistry->getManager()->getRepository(Trash::class)->find(intval($trash)));
                 $history->setIdUser($managerRegistry->getManager()->getRepository(User::class)->find(intval($user)));
                 $history->setCreatedAt(new \DateTimeImmutable());
 
@@ -116,19 +129,16 @@ class HistoryController extends AbstractController
         }
     }
 
-    #[Route('/history/{id}', name: 'history_show', methods: ['GET',"POST", "DELETE"])]
-    public function show(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
+    #[Route('/check-barcode', name: 'history_checkbarcode', methods: ['POST'])]
+    public function checkBarcode(ManagerRegistry $managerRegistry, Request $request): JsonResponse
     {
-        $method = $request->getMethod();
-        switch ($method) {
-            case "GET":
-                $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['id' => $id]);
-                if (!$history) {
-                    return $this->json([
-                        'message' => 'History not found',
-                    ]);
-                }
-                $data = [
+        //check si le code barre existe dans la table history
+        $barcode = $request->request->get('barcode');
+        $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode]);
+        if ($history) {
+            return $this->json([
+                'message' => 'success',
+                'history' => [
                     'id' => $history->getId(),
                     'name' => $history->getName(),
                     'brand' => $history->getBrand(),
@@ -136,18 +146,23 @@ class HistoryController extends AbstractController
                     'image' => $history->getImage(),
                     'type' => $history->getIdType()->getName(),
                     "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
-                    'trash' => [
-                        'id' => $history->getIdTrash()->getId(),
-                        'commune' => $history->getIdTrash()->getCommune(),
-                        'latitude' => $history->getIdTrash()->getLatitude(),
-                        'longitude' => $history->getIdTrash()->getLongitude(),
-                        'adresse' => $history->getIdTrash()->getAdresse(),
-                        'type' => $history->getIdTrash()->getIdType()->getName(),
-                    ],
-                ];
-                return $this->json([
-                    'history' => $data,
-                ]);
+                ]
+            ]);
+        } else {
+            return $this->json([
+                'message' => 'Produit non trouvé',
+            ]);
+        }
+    }
+
+    #[Route('/history/{id}', name: 'history_show', methods: ['GET', "POST", "DELETE"])]
+    public function show(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
+    {
+        $method = $request->getMethod();
+        switch ($method) {
+            case "GET":
+                $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['id' => $id]);
+                return $this->extracted($history);
                 break;
 
             case "POST":
@@ -201,5 +216,30 @@ class HistoryController extends AbstractController
                 ]);
                 break;
         }
+    }
+
+    /**
+     * @param mixed $history
+     * @return JsonResponse
+     */
+    public function extracted(mixed $history): JsonResponse
+    {
+        if (!$history) {
+            return $this->json([
+                'message' => 'History not found',
+            ]);
+        }
+        $data = [
+            'id' => $history->getId(),
+            'name' => $history->getName(),
+            'brand' => $history->getBrand(),
+            'barcode' => $history->getBarcode(),
+            'image' => $history->getImage(),
+            'type' => $history->getIdType()->getName(),
+            "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
+        ];
+        return $this->json([
+            'history' => $data,
+        ]);
     }
 }
