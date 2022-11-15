@@ -29,8 +29,6 @@ class History
     #[ORM\ManyToOne(inversedBy: 'histories')]
     private ?Type $id_type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'histories')]
-    private ?Trash $id_trash = null;
 
     #[ORM\ManyToOne(inversedBy: 'histories')]
     private ?User $id_user = null;
@@ -100,18 +98,6 @@ class History
     public function setImage(string $image): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getIdTrash(): ?Trash
-    {
-        return $this->id_trash;
-    }
-
-    public function setIdTrash(?Trash $id_trash): self
-    {
-        $this->id_trash = $id_trash;
 
         return $this;
     }
