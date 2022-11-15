@@ -28,6 +28,7 @@ class AuthController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $managerRegistry): JsonResponse
     {
+        $success = false;
         $email = $request->request->get('email');
         $password = $request->request->get('password');
         $error = null;
@@ -72,6 +73,7 @@ class AuthController extends AbstractController
                             "createdAt" => $user->getCreatedAt(),
                             "updatedAt" => $user->getUpdatedAt(),
                         ];
+                        $success = true;
                     }
                 }
             }
@@ -80,6 +82,7 @@ class AuthController extends AbstractController
         return $this->json([
             'message' => 'Login',
             'error' => $error,
+            "success" => $success,
             "user" => $data,
         ]);
     }
@@ -134,11 +137,13 @@ class AuthController extends AbstractController
                     }
                 }
                 return $this->json([
+                    "success" => true,
                     'message' => "user and badges created",
                 ]);
             }
         }
         return $this->json([
+            "success" => false,
             'error' => $error,
         ]);
     }
