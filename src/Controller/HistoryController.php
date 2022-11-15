@@ -73,13 +73,6 @@ class HistoryController extends AbstractController
                 $type = $request->request->get('type');
                 $user = $request->request->get('user');
 
-                $barcodeExist = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode]);
-                if ($barcodeExist) {
-                    return $this->json([
-                        'message' => 'Le code barre existe déjà',
-                    ]);
-                }
-
                 if (!$name || !$brand || !$barcode || !$image || !$type || !$user) {
                     $missing = [];
                     if (!$name) {
