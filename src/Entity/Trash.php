@@ -105,33 +105,4 @@ class Trash
         return $this;
     }
 
-    /**
-     * @return Collection<int, History>
-     */
-    public function getHistories(): Collection
-    {
-        return $this->histories;
-    }
-
-    public function addHistory(History $history): self
-    {
-        if (!$this->histories->contains($history)) {
-            $this->histories->add($history);
-            $history->setIdPoubelle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHistory(History $history): self
-    {
-        if ($this->histories->removeElement($history)) {
-            // set the owning side to null (unless already changed)
-            if ($history->getIdPoubelle() === $this) {
-                $history->setIdPoubelle(null);
-            }
-        }
-
-        return $this;
-    }
 }
