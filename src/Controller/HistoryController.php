@@ -127,7 +127,8 @@ class HistoryController extends AbstractController
     {
         //check si le code barre existe dans la table history
         $barcode = $request->request->get('barcode');
-        $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode]);
+        $id_user = $request->request->get('id');
+        $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode, 'id_user' => $id_user]);
         if ($history) {
             return $this->json([
                 'message' => 'success',
@@ -191,7 +192,7 @@ class HistoryController extends AbstractController
                     ]);
                 } else {
                     return $this->json([
-                        'message' => 'erroaaar',
+                        'message' => 'error',
                     ]);
                 }
                 break;
@@ -209,6 +210,29 @@ class HistoryController extends AbstractController
                 ]);
                 break;
         }
+    }
+
+    #[Route('/user-history', name: 'user_history', methods: ['GET'])]
+    public function userHistory(ManagerRegistry $managerRegistry, Request $request): JsonResponse
+    {
+        $id = $request->query->get('id');
+        $history = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_user' => $id]);
+        $histories = [];
+        foreach ($history as $h) {
+            $histories[] = [
+                'id' => $h->getId(),
+                'name' => $h->getName(),
+                'brand' => $h->getBrand(),
+                'barcode' => $h->getBarcode(),
+                'image' => $h->getImage(),
+                'type' => $h->getIdType()->getName(),
+                "createdAt" => $h->getCreatedAt()->format('d/m/Y H:i'),
+            ];
+        }
+        return $this->json([
+            'message' => 'success',
+            'histories' => $histories,
+        ]);
     }
 
     /**
