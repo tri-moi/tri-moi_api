@@ -38,7 +38,20 @@ class HistoryRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function paginateHistory(int $page, int $limit, int $user): array
+    {
+        $offset = ($page - 1) * $limit;
 
+        $query = $this->createQueryBuilder('h')
+            ->andWhere('h.id_user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('h.created_at', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        return $query->getResult();
+    }
 //    /**
 //     * @return History[] Returns an array of History objects
 //     */

@@ -212,11 +212,17 @@ class HistoryController extends AbstractController
     }
 
 
-    #[Route('/historyByUser/{id}', name: 'history_user', methods: ['GET'])]
+    #[Route('/historyByUser/{id}?page={page}', name: 'history_user', methods: ['GET'])]
     public function getUserHistory(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
     {
-            $history = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_user' => $id]);
-            return $this->extracted($history);
+        if($request->query->get("page")) {
+            $page = $request->query->get("page");
+        } else {
+            $page=1;
+        }
+        $history = $managerRegistry->getManager()->getRepository(History::class)
+            ->paginateHistory($page,10,$id);
+        return $this->extracted($history);
     }
 
 
@@ -231,15 +237,40 @@ class HistoryController extends AbstractController
                 'message' => 'History not found',
             ]);
         }
-        $data = [
-            'id' => $history->getId(),
-            'name' => $history->getName(),
-            'brand' => $history->getBrand(),
-            'barcode' => $history->getBarcode(),
-            'image' => $history->getImage(),
-            'type' => $history->getIdType()->getName(),
-            "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
-        ];
+        if (gettype($history)!=='array') {
+            $data = [
+                'id' => $history->getId(),
+                'name' => $history->getName(),
+                'brand' => $history->getBrand(),
+                'barcode' => $history->getBarcode(),
+                'image' => $history->getImage(),
+                'type' => $history->getIdType()->getName(),
+                "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
+            ];
+        } else {
+            foreach ($history as $singleHistory) {
+                $data[] = [
+                    'id' => $singleHistory->getId(),
+                    'name' => $singleHistory->getName(),
+                    'brand' => $singleHistory->getBrand(),
+                    'barcode' => $singleHistory->getBarcode(),
+                    'image' => $singleHistory->getImage(),
+                    'type' => $singleHistory->getIdType()->getName(),
+                    "createdAt" => $singleHistory->getCreatedAt()->format('d/m/Y H:i'),
+                    'user' => [
+                        'id' => $singleHistory->getIdUser()->getId(),
+                        'firstname' => $singleHistory->getIdUser()->getFirstname(),
+                        'lastname' => $singleHistory->getIdUser()->getLastname(),
+                        'email' => $singleHistory->getIdUser()->getEmail(),
+                        'role' => $singleHistory->getIdUser()->getRoles(),
+                    ],
+                ];
+            }
+            return $this->json([
+                'histories' => $data,
+            ]);
+        }
+
         return $this->json([
             'history' => $data,
         ]);
