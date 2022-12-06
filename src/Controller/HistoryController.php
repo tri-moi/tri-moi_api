@@ -211,6 +211,15 @@ class HistoryController extends AbstractController
         }
     }
 
+
+    #[Route('/historyByUser/{id}', name: 'history_user', methods: ['GET'])]
+    public function getUserHistory(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
+    {
+            $history = $managerRegistry->getManager()->getRepository(History::class)->findBy(['id_user' => $id]);
+            return $this->extracted($history);
+    }
+
+
     /**
      * @param mixed $history
      * @return JsonResponse
