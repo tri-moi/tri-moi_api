@@ -212,7 +212,7 @@ class HistoryController extends AbstractController
     }
 
 
-    #[Route('/historyByUser/{id}?page={page}', name: 'history_user', methods: ['GET'])]
+    #[Route('/historyByUser/{id}', name: 'history_user', methods: ['GET'])]
     public function getUserHistory(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
     {
         if($request->query->get("page")) {
@@ -234,6 +234,7 @@ class HistoryController extends AbstractController
     {
         if (!$history) {
             return $this->json([
+                'status' => 'error',
                 'message' => 'History not found',
             ]);
         }
@@ -267,6 +268,7 @@ class HistoryController extends AbstractController
                 ];
             }
             return $this->json([
+                'status' => 'success',
                 'histories' => $data,
             ]);
         }
