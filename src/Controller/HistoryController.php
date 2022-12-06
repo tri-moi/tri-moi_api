@@ -127,7 +127,8 @@ class HistoryController extends AbstractController
     {
         //check si le code barre existe dans la table history
         $barcode = $request->request->get('barcode');
-        $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode]);
+        $user = $request->request->get('user');
+        $history = $managerRegistry->getManager()->getRepository(History::class)->findOneBy(['barcode' => $barcode,'id_user'=>$user]);
         if ($history) {
             return $this->json([
                 'message' => 'success',
