@@ -54,43 +54,32 @@ class HistoryRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    public function countUserProducts(int $user)
+    public function countUserProducts(int $user,array $types)
     {
         try {
-            $menageres =$this->createQueryBuilder('h')
-                ->select('COUNT(h.id)')
-                ->andWhere('h.id_type = 9')
-                ->andWhere('h.id_user = :user')
-                ->setParameter('user', $user)
-                ->getQuery()
-                ->getSingleScalarResult();
-            $verre =$this->createQueryBuilder('h')
-                ->select('COUNT(h.id)')
-                ->andWhere('h.id_type = 10')
-                ->andWhere('h.id_user = :user')
-                ->setParameter('user', $user)
-                ->getQuery()
-                ->getSingleScalarResult();
-            $recyclables =$this->createQueryBuilder('h')
-                ->select('COUNT(h.id)')
-                ->andWhere('h.id_type = 11')
-                ->andWhere('h.id_user = :user')
-                ->setParameter('user', $user)
-                ->getQuery()
-                ->getSingleScalarResult();
-            $textile =$this->createQueryBuilder('h')
-                ->select('COUNT(h.id)')
-                ->andWhere('h.id_type = 12')
-                ->andWhere('h.id_user = :user')
-                ->setParameter('user', $user)
-                ->getQuery()
-                ->getSingleScalarResult();
+//            $types =$this->createQueryBuilder('h')
+//                ->select('h.id_type')
+//                ->where('h.id_user = :user')
+//                ->setParameter('user', $user)
+//                ->getQuery()
+//                ->getResult();
+            foreach ($types as $key => $type) {
+                $count[$key] =$this->createQueryBuilder('h')
+                    ->select('COUNT(h.id)')
+                    ->andWhere("h.id_type = :type")
+                    ->andWhere('h.id_user = :user')
+                    ->setParameter('user', $user)
+                    ->setParameter('type', $type)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+            }
+
             return [
-                'menageres' => $menageres,
-                'verre' => $verre,
-                'recyclables' => $recyclables,
-                'textile' => $textile,
-                'total' => $menageres+$verre+$recyclables+$textile
+                'menageres' => $count['Ordures ménagères'],
+                'verre' => $count['Emballages en verre'],
+                'recyclables' => $count['Emballages recyclables'],
+                'textile' => $count['Textile'],
+                'total' => $count['Ordures ménagères']+$count['Emballages en verre']+$count['Emballages recyclables']+$count['Textile']
             ];
         } catch (NonUniqueResultException $e) {
             return 'error';
