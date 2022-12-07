@@ -24,7 +24,7 @@ class UserController extends AbstractController
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
                 'roles' => $user->getRoles(),
-                "firtName" => $user->getFirstName(),
+                "firstName" => $user->getFirstName(),
                 "lastName" => $user->getLastName(),
                 "profilePicture" => $user->getProfilPic(),
                 "birthday" => $user->getBirthday(),
@@ -51,7 +51,7 @@ class UserController extends AbstractController
                         'id' => $user->getId(),
                         'email' => $user->getEmail(),
                         'roles' => $user->getRoles(),
-                        "firtName" => $user->getFirstName(),
+                        "firstName" => $user->getFirstName(),
                         "lastName" => $user->getLastName(),
                         "profilePicture" => $user->getProfilPic(),
                         "birthday" => $user->getBirthday(),
@@ -64,25 +64,147 @@ class UserController extends AbstractController
                     if ($request->query->get("_method")) {
                         $method = $request->query->get("_method");
                         if ($method === "PUT") {
-                            $user = $managerRegistry->getRepository(User::class)->find($id);
-                            $user->setFirstName($request->request->get("first_name"));
-                            $user->setLastName($request->request->get("last_name"));
-                            $user->setBirthday(new \DateTime($request->request->get("birthday")));
-                            $user->setProfilPic($request->request->get("profile_picture"));
-                            $user->setUpdatedAt(new \DateTimeImmutable("now"));
-                            $managerRegistry->getManager()->flush();
-                            $data = [
-                                'id' => $user->getId(),
-                                'email' => $user->getEmail(),
-                                'roles' => $user->getRoles(),
-                                "firtName" => $user->getFirstName(),
-                                "lastName" => $user->getLastName(),
-                                "profilePicture" => $user->getProfilPic(),
-                                "birthday" => $user->getBirthday(),
-                                "createdAt" => $user->getCreatedAt(),
-                                "updatedAt" => $user->getUpdatedAt(),
-                            ];
-                            return $this->json($data);
+                            $type = $request->request->get("type");
+                            switch ($type) {
+                                case "firstName":
+                                    $user->setFirstName($request->request->get("firstName"));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    $managerRegistry->getManager()->flush();
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "First name updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                case "lastName":
+                                    $user->setLastName($request->request->get("lastName"));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $managerRegistry->getManager()->flush();
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "Last name updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                case "email":
+                                    $user->setEmail($request->request->get("email"));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $managerRegistry->getManager()->flush();
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "Birthday updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                case "birthday":
+                                    $user->setBirthday(new \DateTime($request->request->get("birthday")));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $managerRegistry->getManager()->flush();
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "Birthday updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                case "profilePicture":
+                                    $user->setProfilPic($request->request->get("profilePicture"));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $managerRegistry->getManager()->flush();
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "Profile picture updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                case "password":
+                                    $user->setPassword($request->request->get("password"));
+                                    $user->setUpdatedAt(new \DateTimeImmutable("now"));
+                                    $managerRegistry->getManager()->flush();
+                                    $data = [
+                                        'id' => $user->getId(),
+                                        'email' => $user->getEmail(),
+                                        'roles' => $user->getRoles(),
+                                        "firstName" => $user->getFirstName(),
+                                        "lastName" => $user->getLastName(),
+                                        "profilePicture" => $user->getProfilPic(),
+                                        "birthday" => $user->getBirthday(),
+                                        "createdAt" => $user->getCreatedAt(),
+                                        "updatedAt" => $user->getUpdatedAt(),
+                                    ];
+
+                                    return $this->json([
+                                        "success" => true,
+                                        "message" => "Password updated",
+                                        "data" => $data
+                                    ]);
+                                    break;
+                                default:
+                                    return $this->json([
+                                        "success" => false,
+                                        "message" => "Type not found"
+                                    ]);
+                                    break;
+                            }
                         } else {
                             return $this->json(["message" => "method not allowed"]);
                         }
