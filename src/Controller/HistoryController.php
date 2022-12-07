@@ -6,6 +6,7 @@ use App\Entity\History;
 use App\Entity\Trash;
 use App\Entity\Type;
 use App\Entity\User;
+use App\Entity\UserBadge;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -72,6 +73,7 @@ class HistoryController extends AbstractController
                 $image = $request->request->get('image');
                 $type = $request->request->get('type');
                 $user = $request->request->get('user');
+                $badge = $request->request->get('badge');
 
                 if (!$name || !$brand || !$barcode || !$image || !$type || !$user) {
                     $missing = [];
@@ -108,6 +110,19 @@ class HistoryController extends AbstractController
                 $history->setCreatedAt(new \DateTimeImmutable());
 
                 $managerRegistry->getManager()->persist($history);
+                $userBadge = $managerRegistry->getManager()
+                    ->getRepository(UserBadge::class)
+                    ->createQueryBuilder('b')
+                    ->where('b.badge LIKE :badge')
+                    ->andWhere('b.id_user = :user')
+                    ->setParameter('badge', $badge)
+                    ->setParameter('user', $user)
+                    ->getQuery()
+                    ->getResult();
+
+                foreach ($userBadge as $singleBadge) {
+                    $singleBadge->setNmbreScan($singleBadge->getNmbreScan()+1);
+                }
                 $managerRegistry->getManager()->flush();
 
                 return $this->json([
@@ -229,8 +244,14 @@ class HistoryController extends AbstractController
     #[Route('/productCounts/{id}', name: 'history_user', methods: ['GET'])]
     public function getProductCounts(ManagerRegistry $managerRegistry, int $id): JsonResponse
     {
+        $types = $managerRegistry->getManager()->getRepository(Type::class)
+            ->findAll();
+        $typeArray= [];
+        foreach ($types as $type) {
+            $typeArray[$type->getName()]=$type->getId();
+        }
         $counts = $managerRegistry->getManager()->getRepository(History::class)
-            ->countUserProducts($id);
+            ->countUserProducts($id,$typeArray);
         return $this->json($counts);
     }
 
