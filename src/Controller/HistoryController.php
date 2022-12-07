@@ -213,7 +213,7 @@ class HistoryController extends AbstractController
     }
 
 
-    #[Route('/historyByUser/{id}', name: 'history_user', methods: ['GET'])]
+    #[Route('/historyByUser/{id}', name: 'history_user_count', methods: ['GET'])]
     public function getUserHistory(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
     {
         if($request->query->get("page")) {
@@ -224,6 +224,14 @@ class HistoryController extends AbstractController
         $history = $managerRegistry->getManager()->getRepository(History::class)
             ->paginateHistory($page,10,$id);
         return $this->extracted($history);
+    }
+
+    #[Route('/productCounts/{id}', name: 'history_user', methods: ['GET'])]
+    public function getProductCounts(ManagerRegistry $managerRegistry, int $id): JsonResponse
+    {
+        $counts = $managerRegistry->getManager()->getRepository(History::class)
+            ->countUserProducts($id);
+        return $this->json($counts);
     }
 
 
