@@ -192,7 +192,7 @@ class HistoryController extends AbstractController
                     ]);
                 } else {
                     return $this->json([
-                        'message' => 'erroaaar',
+                        'message' => 'error',
                     ]);
                 }
                 break;
@@ -233,7 +233,6 @@ class HistoryController extends AbstractController
             ->countUserProducts($id);
         return $this->json($counts);
     }
-
 
     /**
      * @param mixed $history
