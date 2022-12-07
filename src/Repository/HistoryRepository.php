@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\History;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,7 +39,63 @@ class HistoryRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function paginateHistory(int $page, int $limit, int $user): array
+    {
+        $offset = ($page - 1) * $limit;
 
+        $query = $this->createQueryBuilder('h')
+            ->andWhere('h.id_user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('h.created_at', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function countUserProducts(int $user)
+    {
+        try {
+            $menageres =$this->createQueryBuilder('h')
+                ->select('COUNT(h.id)')
+                ->andWhere('h.id_type = 9')
+                ->andWhere('h.id_user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getSingleScalarResult();
+            $verre =$this->createQueryBuilder('h')
+                ->select('COUNT(h.id)')
+                ->andWhere('h.id_type = 10')
+                ->andWhere('h.id_user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getSingleScalarResult();
+            $recyclables =$this->createQueryBuilder('h')
+                ->select('COUNT(h.id)')
+                ->andWhere('h.id_type = 11')
+                ->andWhere('h.id_user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getSingleScalarResult();
+            $textile =$this->createQueryBuilder('h')
+                ->select('COUNT(h.id)')
+                ->andWhere('h.id_type = 12')
+                ->andWhere('h.id_user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return [
+                'menageres' => $menageres,
+                'verre' => $verre,
+                'recyclables' => $recyclables,
+                'textile' => $textile,
+                'total' => $menageres+$verre+$recyclables+$textile
+            ];
+        } catch (NonUniqueResultException $e) {
+            return 'error';
+        }
+    }
 //    /**
 //     * @return History[] Returns an array of History objects
 //     */
