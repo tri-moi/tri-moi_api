@@ -154,7 +154,6 @@ class HistoryController extends AbstractController
                     'barcode' => $history->getBarcode(),
                     'image' => $history->getImage(),
                     'type' => $history->getIdType()->getName(),
-                    'typeId' => $history->getIdType()->getId(),
                     "createdAt" => $history->getCreatedAt()->format('d/m/Y H:i'),
                 ]
             ]);
@@ -165,7 +164,7 @@ class HistoryController extends AbstractController
         }
     }
 
-    #[Route('/history/{id}', name: 'history_show', methods: ['GET', "POST", "DELETE","UPDATE"])]
+    #[Route('/history/{id}', name: 'history_show', methods: ['GET', "POST", "DELETE"])]
     public function show(ManagerRegistry $managerRegistry, Request $request, int $id): JsonResponse
     {
         $method = $request->getMethod();
@@ -178,48 +177,31 @@ class HistoryController extends AbstractController
             case "POST":
                 $query = $request->query->get('_method');
                 if ($query === "PUT") {
-                    $id = $request->request->get('id');
+                    $name = $request->request->get('name');
+                    $brand = $request->request->get('brand');
+                    $barcode = $request->request->get('barcode');
+                    $image = $request->request->get('image');
                     $type = $request->request->get('type');
+                    $trash = $request->request->get('trash');
                     $user = $request->request->get('user');
-                    $badge = '%"id":'.$request->request->get('badgeId').'%';
-                    $oldBadge = '%"id":'.$request->request->get('oldBadgeId').'%';
 
-                    if (!$id || !$type || !$badge) {
+                    if (!$name || !$brand || !$barcode || !$image || !$type || !$trash || !$user) {
                         return $this->json([
                             'message' => 'Missing parameters',
                         ]);
                     }
-                    $newUserBadge = $managerRegistry->getManager()
-                        ->getRepository(UserBadge::class)
-                        ->createQueryBuilder('b')
-                        ->where('b.badge LIKE :badge')
-                        ->andWhere('b.id_user = :user')
-                        ->setParameter('badge', $badge)
-                        ->setParameter('user', $user)
-                        ->getQuery()
-                        ->getResult();
-
-                    $oldUserBadge = $managerRegistry->getManager()
-                        ->getRepository(UserBadge::class)
-                        ->createQueryBuilder('b')
-                        ->where('b.badge LIKE :badge')
-                        ->andWhere('b.id_user = :user')
-                        ->setParameter('badge', $oldBadge)
-                        ->setParameter('user', $user)
-                        ->getQuery()
-                        ->getResult();
-
-                    foreach ($newUserBadge as $singleBadge) {
-                        $singleBadge->setNmbreScan($singleBadge->getNmbreScan()+1);
-                    }
-                    foreach ($oldUserBadge as $singleBadge) {
-                        $singleBadge->setNmbreScan($singleBadge->getNmbreScan()-1);
-                    }
-                    $managerRegistry->getManager()->flush();
                     $history = $managerRegistry->getManager()->getRepository(History::class)->find($id);
+                    $history->setName($name);
+                    $history->setBrand($brand);
+                    $history->setBarcode($barcode);
+                    $history->setImage($image);
                     $history->setIdType($managerRegistry->getManager()->getRepository(Type::class)->find(intval($type)));
+                    $history->setIdTrash($managerRegistry->getManager()->getRepository(Trash::class)->find(intval($trash)));
+                    $history->setIdUser($managerRegistry->getManager()->getRepository(User::class)->find(intval($user)));
+
                     $managerRegistry->getManager()->persist($history);
                     $managerRegistry->getManager()->flush();
+
                     return $this->json([
                         'message' => 'success',
                     ]);
