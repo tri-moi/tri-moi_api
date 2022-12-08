@@ -27,7 +27,7 @@ class UserController extends AbstractController
                 "firstName" => $user->getFirstName(),
                 "lastName" => $user->getLastName(),
                 "profilePicture" => $user->getProfilPic(),
-                "birthday" => $user->getBirthday(),
+                "birthDate" => $user->getBirthday(),
                 "createdAt" => $user->getCreatedAt(),
                 "updatedAt" => $user->getUpdatedAt(),
             ];
@@ -54,7 +54,7 @@ class UserController extends AbstractController
                         "firstName" => $user->getFirstName(),
                         "lastName" => $user->getLastName(),
                         "profilePicture" => $user->getProfilPic(),
-                        "birthday" => $user->getBirthday(),
+                        "birthDate" => $user->getBirthday(),
                         "createdAt" => $user->getCreatedAt(),
                         "updatedAt" => $user->getUpdatedAt(),
                     ];
@@ -76,7 +76,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
@@ -99,7 +99,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
@@ -121,7 +121,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
@@ -132,8 +132,8 @@ class UserController extends AbstractController
                                         "data" => $data
                                     ]);
                                     break;
-                                case "birthday":
-                                    $user->setBirthday(new \DateTime($request->request->get("birthday")));
+                                case "birthDate":
+                                    $user->setBirthday(new \DateTime($request->request->get("birthDate")));
                                     $user->setUpdatedAt(new \DateTimeImmutable("now"));
                                     $managerRegistry->getManager()->flush();
                                     $data = [
@@ -143,7 +143,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
@@ -165,7 +165,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
@@ -187,7 +187,7 @@ class UserController extends AbstractController
                                         "firstName" => $user->getFirstName(),
                                         "lastName" => $user->getLastName(),
                                         "profilePicture" => $user->getProfilPic(),
-                                        "birthday" => $user->getBirthday(),
+                                        "birthDate" => $user->getBirthday(),
                                         "createdAt" => $user->getCreatedAt(),
                                         "updatedAt" => $user->getUpdatedAt(),
                                     ];
