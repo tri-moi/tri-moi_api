@@ -155,7 +155,17 @@ class UserController extends AbstractController
                                     ]);
                                     break;
                                 case "profilePicture":
-                                    $user->setProfilPic($request->request->get("profilePicture"));
+                                    // receive the file
+                                    $files = $request->files->get("file");
+                                    $publicResourcesFolderPath = $this->getParameter('kernel.project_dir') . '/public/uploads/';
+                                    $fileName = "profil_pic_" . $user->getId() . ".jpg";
+                                    $link = $publicResourcesFolderPath . $fileName;
+                                    if (file_exists($link)) {
+                                        unlink($link);
+                                    }
+                                    move_uploaded_file($files->getpathName(), $link);
+
+                                    $user->setProfilPic($fileName);
                                     $user->setUpdatedAt(new \DateTimeImmutable("now"));
                                     $managerRegistry->getManager()->flush();
                                     $data = [
