@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -242,5 +243,16 @@ class UserController extends AbstractController
             ]);
         }
 
+    }
+
+    #[Route('/profil-pic/{id}', name: 'api_user_profil_pic', methods: ['GET'])]
+    public function getProfilPicture($id, ManagerRegistry $managerRegistry, Request $request): BinaryFileResponse
+    {
+        $user = $managerRegistry->getRepository(User::class)->find($id);
+        $profilPic = $user->getProfilPic();
+        $publicResourcesFolderPath = $this->getParameter('kernel.project_dir') . '/public/uploads/';
+        $fileName = $profilPic;
+        $link = $publicResourcesFolderPath . $fileName;
+        return new BinaryFileResponse($link);
     }
 }
