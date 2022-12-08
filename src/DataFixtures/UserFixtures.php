@@ -31,7 +31,7 @@ class UserFixtures extends Fixture
         $user->setRoles(["ROLE_ADMIN"]);
         $user->setFirstName("Philippe");
         $user->setLastName("Admin");
-        $user->setProfilPic("https://www.fakepersongenerator.com/Face/female/female1022491733642.jpg");
+        $user->setProfilPic("defaultpp.jpg");
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
 
@@ -43,7 +43,7 @@ class UserFixtures extends Fixture
         $user->setRoles(["ROLE_USER"]);
         $user->setFirstName("Pierre");
         $user->setLastName("Martinet");
-        $user->setProfilPic("https://www.fakepersongenerator.com/Face/male/male1085416855.jpg");
+        $user->setProfilPic("/defaultpp.jpg");
         $user->setBirthday(new \DateTime("2000-01-01"));
         $user->setCreatedAt(new \DateTimeImmutable("now"));
         $this->extracted($badges, $level, $user, $manager);
