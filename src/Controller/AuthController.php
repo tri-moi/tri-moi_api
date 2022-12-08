@@ -50,7 +50,7 @@ class AuthController extends AbstractController
                         "firstName" => $user->getFirstName(),
                         "lastName" => $user->getLastName(),
                         "profilePicture" => $user->getProfilPic(),
-                        "birthday" => $user->getBirthday(),
+                        "birthDate" => $user->getBirthday(),
                         "createdAt" => $user->getCreatedAt(),
                         "updatedAt" => $user->getUpdatedAt(),
                     ];
@@ -69,7 +69,7 @@ class AuthController extends AbstractController
                             "firstName" => $user->getFirstName(),
                             "lastName" => $user->getLastName(),
                             "profilePicture" => $user->getProfilPic(),
-                            "birthday" => $user->getBirthday(),
+                            "birthDate" => $user->getBirthday(),
                             "createdAt" => $user->getCreatedAt(),
                             "updatedAt" => $user->getUpdatedAt(),
                         ];
@@ -117,7 +117,7 @@ class AuthController extends AbstractController
                 $user->setEmail($email);
                 $user->setPassword($passwordHasher->hashPassword($user, $password));
                 $user->setFirstName($first_name);
-                $user->setProfilPic("/default pp.jpg");
+                $user->setProfilPic("defaultpp.jpg");
                 $user->setLastName($last_name);
                 $user->setRoles(["ROLE_USER"]);
                 $user->setCreatedAt(new \DateTimeImmutable());
